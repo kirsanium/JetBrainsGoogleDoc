@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <div>
+      <button id="edit-tables" onclick="runEditDocument()">Format all tables</button>
+    </div>
+    <div>
+      <button id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
+    </div>
+    <script>
+    window.runEditDocument = function() {
+        google.script.run.formatTables();
+    }
+    window.runInsertSpaces = function() {
+        google.script.run.editSelection();
+    }
+    </script>
+  </body>
+</html>
+
+
