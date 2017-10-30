@@ -4,18 +4,125 @@ function showSidebar() {
   DocumentApp.getUi().showSidebar(ui);
 }
 
-function insertThinSpaces(e) {
-  //var regExp = "(\\s)|(\\A)\\d{4,}(\\s)|(\\z)"
-  var regExp = "\\d{4,}"
-  var textToReplace = e.findText(regExp);
-  while (textToReplace) {
-    var forReplacement = textToReplace.getElement().asText().editAsText();
-    for (var i = textToReplace.getEndOffsetInclusive() - 2; i > textToReplace.getStartOffset(); i = i - 3) {
-      forReplacement.insertText(i, " ");
+function onOpen(e) {
+  DocumentApp.getUi().createAddonMenu()
+      .addItem('Start', 'showSidebar')
+      .addToUi();
+}
+
+function getSelectedText() {
+  var selection = DocumentApp.getActiveDocument().getSelection();
+  
+  if (selection) {
+    var text = [];
+    var elements = selection.getSelectedElements();
+    
+    for (var i = 0; i < elements.length; i++) {
+      if (elements[i].isPartial()) {
+        var element = elements[i].getElement().asText();
+        var startIndex = elements[i].getStartOffset();
+        var endIndex = elements[i].getEndOffsetInclusive();
+
+        text.push(element.getText().substring(startIndex, endIndex + 1));
+      } else {
+        var element = elements[i].getElement();
+        
+        if (element.editAsText) {
+          var elementText = element.asText().getText();
+          text.push(elementText);
+        }
+      }
     }
-    textToReplace = e.findText(regExp, textToReplace);
+    
+    if (text.length == 0) {
+      return false;
+    }
+    
+    return text;
+  } else {
+    return false;
   }
-  return e;
+}
+
+function isNumber(character) {
+  if (character >= '0' && character <= '9')
+    return true;
+  
+  return false;
+}
+
+function insertThinSpaces(string) {
+  var numberCount = 0;
+  
+  for (var i = string.length - 1; i > 0; i--) {
+    
+    if (isNumber(string[i])) {
+      numberCount++;
+      
+      if (numberCount % 3 == 0 && numberCount != 0 && isNumber(string[i - 1])) {
+        string = [string.slice(0, i), "\u2009", string.slice(i)].join('');
+      }
+    } else {
+      numberCount = 0;
+    }
+  }
+  
+  return string;
+}
+
+function insertText(newText) {
+  var selection = DocumentApp.getActiveDocument().getSelection();
+  var elements = selection.getSelectedElements();
+  
+  for (var i = 0; i < elements.length; i++) {
+    if (elements[i].isPartial()) {
+      var element = elements[i].getElement().asText();
+      var startIndex = elements[i].getStartOffset();
+      var endIndex = elements[i].getEndOffsetInclusive();
+      var remainingText = element.getText().substring(endIndex + 1);
+      
+      element.deleteText(startIndex, endIndex);
+      element.insertText(startIndex, newText);
+    } else {
+      var element = elements[i].getElement();
+      
+      if (element.editAsText) {
+        element.asText().setText(newText[i]);
+      }
+    }
+  }
+}
+
+function editSelection() {
+   var selectedText = getSelectedText();
+  if (selectedText) {
+    for (var i = 0; i < selectedText.length; i++) {
+      selectedText[i] = insertThinSpaces(selectedText[i]); 
+    }
+    
+    insertText(selectedText);
+  } else {
+    var cursor = DocumentApp.getActiveDocument().getCursor();
+    var tableCell = cursor.getElement().getParent();
+    
+    if (tableCell.getType() == DocumentApp.ElementType.PARAGRAPH) {
+      tableCell = tableCell.getParent();
+    }
+    
+    if (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
+      throw 'Please, select some text';
+    }
+    
+    var colIndex = tableCell.getParent().getChildIndex(tableCell);
+    var table = tableCell.getParentTable();
+    var numRows = table.getNumChildren();
+    
+    for (var i = 0; i < numRows; i++) {
+      var currentCell = table.getChild(i).getChild(colIndex);
+      var text = insertThinSpaces(currentCell.editAsText().getText());
+      currentCell.setText(text);
+    }
+  }
 }
 
 function insertHorizontalRuleToTable(table, rowNum) {
@@ -91,21 +198,3 @@ function formatTables() {
     }
   }
 }
-
-function onOpen(e) {
-  DocumentApp.getUi().createAddonMenu()
-      .addItem('Start', 'showSidebar')
-      .addToUi();
-}
-
-//function myFunction() {
-//  var doc = DocumentApp.getActiveDocument();
-//  var body = doc.getBody();    
-//  var element = body.getChild(2).asListItem(); 
-//  var attrs = element.getAttributes(); 
-//  for (var att in attrs) {
-//    Logger.log(att + " : " + attrs[att]);
-//  }
-//}
-
-
