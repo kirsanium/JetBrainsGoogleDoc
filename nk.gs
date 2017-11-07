@@ -20,7 +20,6 @@ function isNumber(character) {
 function insertThinSpaces(text, start, end) {
   if (!start) start = 0;
   if (!end) end = text.getText().length - 1;
-  
   var oldText = text.getText().slice(start, end + 1);
   var newText = oldText;
   var numberCount = 0;
@@ -37,14 +36,12 @@ function insertThinSpaces(text, start, end) {
       numberCount = 0;
     }
   }
-
   text.deleteText(start, end);
   text.insertText(start, newText)
 }
 
 function editSelection() {
   var selection = DocumentApp.getActiveDocument().getSelection();
-  
   if (selection) {
     var elements = selection.getRangeElements();
     
@@ -55,7 +52,7 @@ function editSelection() {
       if (element.isPartial()) {
         insertThinSpaces(textElement, element.getStartOffset(), element.getEndOffsetInclusive());
       } else {
-        insertThinSpaces(element);
+        insertThinSpaces(textElement);
       }
     }
   } else {
@@ -157,25 +154,81 @@ function setStyleguideAlignment(e) {
   return e;
 }
 
-function formatTables() {
-  var doc = DocumentApp.getActiveDocument();
-  var body = doc.getBody();
-  var tables = body.getTables();
-  for (var i = 0; i < tables.length; i++) {
-    tables[i].setBorderWidth(0);
-    if (!tables[i].getCell(1, 0).getChild(0).asParagraph()
+function formatSelectedTable() {
+  var selection = DocumentApp.getActiveDocument().getSelection();
+  var isTable = true;
+  if (selection) {
+    var elements = selection.getRangeElements();
+    
+    for (var i = 0; i < elements.length; i++) {
+      
+      var element = elements[i];
+      while (element.getType() != DocumentApp.ElementType.TABLE || element.getType() == DocumentApp.ElementType.DOCUMENT)
+      {
+        if (element.getType() == DocumentApp.ElementType.DOCUMENT)
+          isTable = false;
+        else element = element.getParent();
+      }
+      if (isTable) formatTable(element);
+    }
+  } else {
+    var cursor = DocumentApp.getActiveDocument().getCursor();
+    var element = cursor.getElement();
+    while (element.getType() != DocumentApp.ElementType.TABLE || element.getType() == DocumentApp.ElementType.DOCUMENT)
+      {
+        if (element.getType() == DocumentApp.ElementType.DOCUMENT)
+          isTable = false;
+        else element = element.getParent();
+      }
+    
+      if (isTable) formatTable(element);
+  }
+}
+
+function formatTable(table) {
+  table.setBorderWidth(0);
+    if (!table.getCell(1, 0).getChild(0).asParagraph()
         .findElement(DocumentApp.ElementType.HORIZONTAL_RULE))
-    insertHorizontalRuleToTable(tables[i], 0);
-    var rowNum = tables[i].getNumRows();
+    insertHorizontalRuleToTable(table, 0);
+    var rowNum = table.getNumRows();
     for (var j = 0; j < rowNum; j++) {
-      var row = tables[i].getRow(j);
+      var row = table.getRow(j);
       var cellNum = row.getNumCells();
       for (var k = 0; k < cellNum; k++) {
         var cell = row.getCell(k);
         setStyleguideAlignment(cell);
-        insertThinSpaces(cell);
-        
       }
     }
+}
+
+function formatAllTables() {
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
+  var tables = body.getTables();
+  for (var i = 0; i < tables.length; i++) {
+    formatTable(tables[i]);
   }
 }
+
+function formatEverything() {
+  var doc = DocumentApp.getActiveDocument();
+  var rangeBuilder = doc.newRange();
+  var tables = doc.getBody().getTables();
+  for (var i = 0; i < tables.length; i++) {
+    rangeBuilder.addElement(tables[i]);
+  }
+  var paragraphs = doc.getBody().getParagraphs();
+  for (var i = 0; i < paragraphs.length; i++) {
+    rangeBuilder.addElement(paragraphs[i]);
+  }
+  var listItems = doc.getBody().getListItems();
+  for (var i = 0; i < listItems.length; i++) {
+    rangeBuilder.addElement(listItems[i]);
+  }
+  doc.setSelection(rangeBuilder.build());
+  editSelection();
+  formatAllTables();
+}
+
+
+

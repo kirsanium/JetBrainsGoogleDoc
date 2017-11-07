@@ -5,17 +5,30 @@
   </head>
   <body>
     <div>
-      <button id="edit-tables" onclick="runEditDocument()">Format all tables</button>
+      <button id="format-all-tables" onclick="runFormatAllTables()">Format all tables</button>
+    </div>
+    <div>
+      <button id="format-selected-tables" onclick="runFormatSelectedTables()">Format selected tables</button>
     </div>
     <div>
       <button id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
     </div>
+    <div>
+      <button id="format-everything" onclick="runFormatEverything()">Format everything</button>
+    </div>
+    
     <script>
-    window.runEditDocument = function() {
-        google.script.run.formatTables();
+    window.runFormatAllTables = function() {
+        google.script.run.formatAllTables();
     }
     window.runInsertSpaces = function() {
         google.script.run.editSelection();
+    }
+    window.runFormatSelectedTables = function(){
+        google.script.run.formatSelectedTable();
+    }
+    window.runFormatEverything = function(){
+        google.script.run.formatEverything();
     }
     </script>
   </body>
