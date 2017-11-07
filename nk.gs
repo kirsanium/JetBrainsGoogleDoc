@@ -10,40 +10,6 @@ function onOpen(e) {
       .addToUi();
 }
 
-function getSelectedText() {
-  var selection = DocumentApp.getActiveDocument().getSelection();
-  
-  if (selection) {
-    var text = [];
-    var elements = selection.getSelectedElements();
-    
-    for (var i = 0; i < elements.length; i++) {
-      if (elements[i].isPartial()) {
-        var element = elements[i].getElement().asText();
-        var startIndex = elements[i].getStartOffset();
-        var endIndex = elements[i].getEndOffsetInclusive();
-
-        text.push(element.getText().substring(startIndex, endIndex + 1));
-      } else {
-        var element = elements[i].getElement();
-        
-        if (element.editAsText) {
-          var elementText = element.asText().getText();
-          text.push(elementText);
-        }
-      }
-    }
-    
-    if (text.length == 0) {
-      return false;
-    }
-    
-    return text;
-  } else {
-    return false;
-  }
-}
-
 function isNumber(character) {
   if (character >= '0' && character <= '9')
     return true;
@@ -51,60 +17,57 @@ function isNumber(character) {
   return false;
 }
 
-function insertThinSpaces(string) {
+function insertThinSpaces(text, start, end) {
+  if (!start) start = 0;
+  if (!end) end = text.getText().length - 1;
+  
+  var oldText = text.getText().slice(start, end + 1);
+  var newText = oldText;
   var numberCount = 0;
   
-  for (var i = string.length - 1; i > 0; i--) {
+  for (var i = newText.length - 1; i > 0; i--) {
     
-    if (isNumber(string[i])) {
+    if (isNumber(newText[i])) {
       numberCount++;
       
-      if (numberCount % 3 == 0 && numberCount != 0 && isNumber(string[i - 1])) {
-        string = [string.slice(0, i), "\u2009", string.slice(i)].join('');
+      if (numberCount % 3 == 0 && numberCount != 0 && isNumber(newText[i - 1])) {
+        newText = [newText.slice(0, i), "\u2009", newText.slice(i)].join('');
       }
     } else {
       numberCount = 0;
     }
   }
-  
-  return string;
-}
 
-function insertText(newText) {
-  var selection = DocumentApp.getActiveDocument().getSelection();
-  var elements = selection.getSelectedElements();
-  
-  for (var i = 0; i < elements.length; i++) {
-    if (elements[i].isPartial()) {
-      var element = elements[i].getElement().asText();
-      var startIndex = elements[i].getStartOffset();
-      var endIndex = elements[i].getEndOffsetInclusive();
-      var remainingText = element.getText().substring(endIndex + 1);
-      
-      element.deleteText(startIndex, endIndex);
-      element.insertText(startIndex, newText);
-    } else {
-      var element = elements[i].getElement();
-      
-      if (element.editAsText) {
-        element.asText().setText(newText[i]);
-      }
-    }
-  }
+  text.deleteText(start, end);
+  text.insertText(start, newText)
 }
 
 function editSelection() {
-   var selectedText = getSelectedText();
-  if (selectedText) {
-    for (var i = 0; i < selectedText.length; i++) {
-      selectedText[i] = insertThinSpaces(selectedText[i]); 
-    }
+  var selection = DocumentApp.getActiveDocument().getSelection();
+  
+  if (selection) {
+    var elements = selection.getRangeElements();
     
-    insertText(selectedText);
+    for (var i = 0; i < elements.length; i++) {
+      var element = elements[i];
+      var textElement = element.getElement().asText();
+      
+      if (element.isPartial()) {
+        insertThinSpaces(textElement, element.getStartOffset(), element.getEndOffsetInclusive());
+      } else {
+        insertThinSpaces(element);
+      }
+    }
   } else {
     var cursor = DocumentApp.getActiveDocument().getCursor();
     var tableCell = cursor.getElement().getParent();
     
+    while (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
+      tableCell = tableCell.getParent(); 
+      
+      if (!tableCell)
+        throw 'Please, select some text'
+    }
     if (tableCell.getType() == DocumentApp.ElementType.PARAGRAPH) {
       tableCell = tableCell.getParent();
     }
@@ -112,17 +75,35 @@ function editSelection() {
     if (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
       throw 'Please, select some text';
     }
-    
     var colIndex = tableCell.getParent().getChildIndex(tableCell);
     var table = tableCell.getParentTable();
     var numRows = table.getNumChildren();
     
     for (var i = 0; i < numRows; i++) {
       var currentCell = table.getChild(i).getChild(colIndex);
-      var text = insertThinSpaces(currentCell.editAsText().getText());
-      currentCell.setText(text);
+      var textElements = getTextChildren(currentCell);
+      textElements.forEach(function(e) {
+                   insertThinSpaces(e);
+      });
     }
   }
+}
+
+function getTextChildren(element) {
+  var elements = [];
+  
+  for (var i = 0; i < element.getNumChildren(); i++) {
+    var child = element.getChild(i);
+    Logger.log(child.getType());
+    
+    if (child.getType() == DocumentApp.ElementType.TEXT)
+      elements.push(child);
+    
+    if (child.getNumChildren)
+      elements = elements.concat(getTextChildren(child));
+  }
+  
+  return elements;
 }
 
 function insertHorizontalRuleToTable(table, rowNum) {
