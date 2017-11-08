@@ -20,6 +20,8 @@ function isNumber(character) {
 function insertThinSpaces(text, start, end) {
   if (!start) start = 0;
   if (!end) end = text.getText().length - 1;
+  if (end - start <= 1)
+    return;
   var oldText = text.getText().slice(start, end + 1);
   var newText = oldText;
   var numberCount = 0;
@@ -36,19 +38,30 @@ function insertThinSpaces(text, start, end) {
       numberCount = 0;
     }
   }
-  if (end >= 0)
-    text.deleteText(start, end);
+  
+  text.deleteText(start, end);
   text.insertText(start, newText)
 }
 
 function editSelection() {
   var selection = DocumentApp.getActiveDocument().getSelection();
+  
   if (selection) {
     var elements = selection.getRangeElements();
     
     for (var i = 0; i < elements.length; i++) {
       var element = elements[i];
-      var textElement = element.getElement().asText();
+      var textElement = element.getElement();
+      
+      if (textElement.getType() != DocumentApp.ElementType.TEXT) {
+      var textElements = getTextChildren(textElement);
+        var textElements = getTextChildren(textElement);
+        textElements.forEach(function(e) {
+          insertThinSpaces(e);
+        });
+        
+        continue;
+      }
       
       if (element.isPartial()) {
         insertThinSpaces(textElement, element.getStartOffset(), element.getEndOffsetInclusive());
@@ -58,6 +71,9 @@ function editSelection() {
     }
   } else {
     var cursor = DocumentApp.getActiveDocument().getCursor();
+    
+    if (!cursor) 
+      throw 'Selet some text';
     var tableCell = cursor.getElement().getParent();
     
     while (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
@@ -65,13 +81,6 @@ function editSelection() {
       
       if (!tableCell)
         throw 'Please, select some text'
-    }
-    if (tableCell.getType() == DocumentApp.ElementType.PARAGRAPH) {
-      tableCell = tableCell.getParent();
-    }
-    
-    if (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
-      throw 'Please, select some text';
     }
     var colIndex = tableCell.getParent().getChildIndex(tableCell);
     var table = tableCell.getParentTable();
@@ -92,7 +101,6 @@ function getTextChildren(element) {
   
   for (var i = 0; i < element.getNumChildren(); i++) {
     var child = element.getChild(i);
-    Logger.log(child.getType());
     
     if (child.getType() == DocumentApp.ElementType.TEXT)
       elements.push(child);
