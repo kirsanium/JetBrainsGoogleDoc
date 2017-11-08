@@ -36,7 +36,8 @@ function insertThinSpaces(text, start, end) {
       numberCount = 0;
     }
   }
-  text.deleteText(start, end);
+  if (end >= 0)
+    text.deleteText(start, end);
   text.insertText(start, newText)
 }
 
@@ -213,18 +214,18 @@ function formatAllTables() {
 function formatEverything() {
   var doc = DocumentApp.getActiveDocument();
   var rangeBuilder = doc.newRange();
-  var tables = doc.getBody().getTables();
-  for (var i = 0; i < tables.length; i++) {
-    rangeBuilder.addElement(tables[i]);
-  }
+//  var tables = doc.getBody().getTables();
+//  for (var i = 0; i < tables.length; i++) {
+//    rangeBuilder.addElement(tables[i]);
+//  }
   var paragraphs = doc.getBody().getParagraphs();
   for (var i = 0; i < paragraphs.length; i++) {
     rangeBuilder.addElement(paragraphs[i]);
   }
-  var listItems = doc.getBody().getListItems();
-  for (var i = 0; i < listItems.length; i++) {
-    rangeBuilder.addElement(listItems[i]);
-  }
+//  var listItems = doc.getBody().getListItems();
+//  for (var i = 0; i < listItems.length; i++) {
+//    rangeBuilder.addElement(listItems[i]);
+//  }
   doc.setSelection(rangeBuilder.build());
   editSelection();
   formatAllTables();
