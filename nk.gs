@@ -121,8 +121,8 @@ function insertHorizontalRuleToTable(table, rowNum) {
 }
 
 function setStyleguideAlignment(e) {
-  var regexWord = "[^0-9\\.\\s\\-]";
-  var regexNum = "(\\s)*(\\d)+(\\.(\\d)+)?(\\s)*";
+  var regexWord = "[^0-9\\.\\s\\- ]";
+  var regexNum = "(\\s)*[\\d ]+(\\.(\\d)+)?(\\s)*";
   var regexInterval = regexNum + "\\-" + regexNum;
   if (e.getText().search(regexWord) != -1) {
     e.getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.LEFT);
@@ -164,22 +164,24 @@ function formatSelectedTable() {
     for (var i = 0; i < elements.length; i++) {
       
       var element = elements[i];
-      while (element.getType() != DocumentApp.ElementType.TABLE || element.getType() == DocumentApp.ElementType.DOCUMENT)
+      while (element.getType() != DocumentApp.ElementType.TABLE && element.getType() != DocumentApp.ElementType.DOCUMENT)
       {
+        element = element.getParent();
         if (element.getType() == DocumentApp.ElementType.DOCUMENT)
           isTable = false;
-        else element = element.getParent();
       }
       if (isTable) formatTable(element);
     }
   } else {
     var cursor = DocumentApp.getActiveDocument().getCursor();
     var element = cursor.getElement();
-    while (element.getType() != DocumentApp.ElementType.TABLE || element.getType() == DocumentApp.ElementType.DOCUMENT)
+    if (element.getType() == DocumentApp.ElementType.DOCUMENT)
+          isTable = false;
+    while (element.getType() != DocumentApp.ElementType.TABLE && element.getType() != DocumentApp.ElementType.DOCUMENT)
       {
+        element = element.getParent();
         if (element.getType() == DocumentApp.ElementType.DOCUMENT)
           isTable = false;
-        else element = element.getParent();
       }
     
       if (isTable) formatTable(element);
