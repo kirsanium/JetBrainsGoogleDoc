@@ -11,6 +11,12 @@
       <button id="format-selected-tables" onclick="runFormatSelectedTables()">Format selected tables</button>
     </div>
     <div>
+      <button id="format-all-list-items" onclick="runFormatAllListItems()">Format all lists</button>
+    </div>
+    <div>
+      <button id="format-selected-list-items" onclick="runFormatSelectedListItems()">Format selected list items</button>
+    </div>
+    <div>
       <button id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
     </div>
     <div>
@@ -21,11 +27,17 @@
     window.runFormatAllTables = function() {
         google.script.run.formatAllTables();
     }
+    window.runFormatAllListItems = function() {
+        google.script.run.formatAllListItems();
+    }
     window.runInsertSpaces = function() {
         google.script.run.editSelection();
     }
     window.runFormatSelectedTables = function(){
-        google.script.run.formatSelectedTable();
+        google.script.run.formatSelectedTables();
+    }
+    window.runFormatSelectedListItems = function(){
+        google.script.run.formatSelectedListItems();
     }
     window.runFormatEverything = function(){
         google.script.run.formatEverything();
@@ -33,5 +45,3 @@
     </script>
   </body>
 </html>
-
-

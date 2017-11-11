@@ -174,7 +174,7 @@ function setStyleguideAlignment(e) {
   return e;
 }
 
-function formatSelectedTable() {
+function formatSelectedTables() {
   var selection = DocumentApp.getActiveDocument().getSelection();
   var isTable = true;
   
@@ -243,6 +243,63 @@ function formatAllTables() {
   }
 }
 
+function formatListItem(listItem) {
+  var nestingLevel = listItem.getNestingLevel() + 1;
+  var points = 0.25;
+  listItem.setIndentFirstLine(nestingLevel * points);
+  listItem.setIndentStart(nestingLevel * points);
+}
+
+function formatAllListItems() {
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
+  var listItems = body.getListItems();
+  
+  for (var i = 0; i < listItems.length; i++) {
+    formatListItem(listItems[i]);
+  }
+}
+
+function formatSelectedListItems() {
+  var selection = DocumentApp.getActiveDocument().getSelection();
+  var isListItem = true;
+  
+  if (selection) {
+    var elements = selection.getRangeElements();
+    
+    for (var i = 0; i < elements.length; i++) {
+      isListItem = true;      
+      var element = elements[i].getElement();
+      
+      while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT)
+      {
+        element = element.getParent();
+        
+        if (element.getType() == DocumentApp.ElementType.DOCUMENT)
+          isListItem = false;
+      }
+      
+      if (isListItem) formatListItem(element);
+    }
+  } else {
+    var cursor = DocumentApp.getActiveDocument().getCursor();
+    var element = cursor.getElement();
+    
+    if (element.getType() == DocumentApp.ElementType.DOCUMENT)
+          isListItem = false;
+    
+    while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT)
+      {
+        element = element.getParent();
+        
+        if (element.getType() == DocumentApp.ElementType.DOCUMENT)
+          isListItem = false;
+      }
+    
+      if (isListItem) formatListItem(element);
+  }
+}
+
 function formatEverything() {
   var doc = DocumentApp.getActiveDocument();
   var rangeBuilder = doc.newRange();
@@ -255,7 +312,5 @@ function formatEverything() {
   doc.setSelection(rangeBuilder.build());
   editSelection();
   formatAllTables();
+  formatAllListItems();
 }
-
-
-
