@@ -1,3 +1,4 @@
+// Shows sidebar.
 function showSidebar() {
   var ui = HtmlService.createHtmlOutputFromFile('Sidebar')
       .setTitle('Test');
@@ -10,6 +11,8 @@ function onOpen(e) {
       .addToUi();
 }
 
+// Checks if the character is number.
+// @param character - a symbol.
 function isNumber(character) {
   if (character >= '0' && character <= '9')
     return true;
@@ -17,6 +20,10 @@ function isNumber(character) {
   return false;
 }
 
+// Inserts thins spaces in all numbers in text between start and end indices.
+// @param text - text to insert thin spaces into.
+// @param start - start index.
+// @param end - end index.
 function insertThinSpaces(text, start, end) {
   if (!start) start = 0;
   if (!end) end = text.getText().length - 1;
@@ -43,6 +50,7 @@ function insertThinSpaces(text, start, end) {
   text.insertText(start, newText)
 }
 
+// Inserts thin spaces into a selected piece of a document.
 function editSelection() {
   var selection = DocumentApp.getActiveDocument().getSelection();
   
@@ -112,6 +120,9 @@ function getTextChildren(element) {
   return elements;
 }
 
+// Inserts horizontal rule to table after row #rowNum.
+// @param table - table to insert the rule into.
+// @param rowNum - number of a row to insert the rule after.
 function insertHorizontalRuleToTable(table, rowNum) {
   var row = table.getRow(rowNum);
   var num = row.getNumCells();
@@ -130,6 +141,8 @@ function insertHorizontalRuleToTable(table, rowNum) {
   return table;
 }
 
+// Sets alignment according to the styleguide.
+// @param e - element to apply the alignment to.
 function setStyleguideAlignment(e) {
   var regexWord = "[^0-9\\.\\s\\- ]";
   var regexNum = "(\\s)*[\\d ]+(\\.(\\d)+)?(\\s)*";
@@ -174,6 +187,7 @@ function setStyleguideAlignment(e) {
   return e;
 }
 
+// Sets alignment according to the styleguide to all selected tables.
 function formatSelectedTables() {
   var selection = DocumentApp.getActiveDocument().getSelection();
   var isTable = true;
@@ -214,6 +228,8 @@ function formatSelectedTables() {
   }
 }
 
+// Sets alignment according to the styleguide to the table.
+// @param table - the table to apply he alignment to.
 function formatTable(table) {
   table.setBorderWidth(0);
   
@@ -233,6 +249,7 @@ function formatTable(table) {
   }
 }
 
+// Sets alignment according to the styleguide to all the tables in the document.
 function formatAllTables() {
   var doc = DocumentApp.getActiveDocument();
   var body = doc.getBody();
@@ -243,13 +260,18 @@ function formatAllTables() {
   }
 }
 
+// Sets indentation according to the styleguide to the list item.
+// @param listItem - the listItem to set the indentation to.
 function formatListItem(listItem) {
   var nestingLevel = listItem.getNestingLevel() + 1;
-  var points = 0.25;
-  listItem.setIndentFirstLine(nestingLevel * points);
-  listItem.setIndentStart(nestingLevel * points);
+  var point = 7.2;
+  Logger.log(listItem.getIndentFirstLine());
+  Logger.log(listItem.getIndentStart());
+  listItem.setIndentFirstLine(nestingLevel * point);
+  listItem.setIndentStart(nestingLevel * point + 18);
 }
 
+// Sets indentation according to the styleguide to all the list items.
 function formatAllListItems() {
   var doc = DocumentApp.getActiveDocument();
   var body = doc.getBody();
@@ -260,6 +282,7 @@ function formatAllListItems() {
   }
 }
 
+// Sets indentation according to the styleguide to the selected list items.
 function formatSelectedListItems() {
   var selection = DocumentApp.getActiveDocument().getSelection();
   var isListItem = true;
@@ -300,6 +323,7 @@ function formatSelectedListItems() {
   }
 }
 
+// Formats the document according to the styleguide.
 function formatEverything() {
   var doc = DocumentApp.getActiveDocument();
   var rangeBuilder = doc.newRange();
@@ -311,6 +335,18 @@ function formatEverything() {
   
   doc.setSelection(rangeBuilder.build());
   editSelection();
+  unsetSelection();
   formatAllTables();
   formatAllListItems();
+}
+
+// Unsets the selection in the document.
+function unsetSelection(){
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
+  var rangeBuilder2 = doc.newRange();
+  var text = body.editAsText().appendText(" ");
+  rangeBuilder2.addElement(text, body.editAsText().getText().length - 1, body.editAsText().getText().length - 1);
+  doc.setSelection(rangeBuilder2.build());
+  text.deleteText(body.editAsText().getText().length - 1, body.editAsText().getText().length - 1);
 }
