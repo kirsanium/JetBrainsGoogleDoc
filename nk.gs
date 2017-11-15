@@ -1,7 +1,11 @@
+/**
+ * @OnlyCurrentDoc
+**/
+
 // Shows sidebar.
 function showSidebar() {
   var ui = HtmlService.createHtmlOutputFromFile('Sidebar')
-      .setTitle('Test');
+      .setTitle('Edit document');
   DocumentApp.getUi().showSidebar(ui);
 }
 
@@ -9,6 +13,11 @@ function onOpen(e) {
   DocumentApp.getUi().createAddonMenu()
       .addItem('Start', 'showSidebar')
       .addToUi();
+}
+
+function showError() {
+  var ui = DocumentApp.getUi();
+  
 }
 
 // Checks if the character is number.
@@ -38,7 +47,7 @@ function insertThinSpaces(text, start, end) {
     if (isNumber(newText[i])) {
       numberCount++;
       
-      if (numberCount % 3 == 0 && numberCount != 0 && isNumber(newText[i - 1])) {
+      if (numberCount % 3 === 0 && numberCount !== 0 && isNumber(newText[i - 1])) {
         newText = [newText.slice(0, i), "\u2009", newText.slice(i)].join('');
       }
     } else {
@@ -47,7 +56,7 @@ function insertThinSpaces(text, start, end) {
   }
   
   text.deleteText(start, end);
-  text.insertText(start, newText)
+  text.insertText(start, newText);
 }
 
 // Inserts thin spaces into a selected piece of a document.
@@ -62,7 +71,6 @@ function editSelection() {
       var textElement = element.getElement();
       
       if (textElement.getType() != DocumentApp.ElementType.TEXT) {
-      var textElements = getTextChildren(textElement);
         var textElements = getTextChildren(textElement);
         textElements.forEach(function(e) {
           insertThinSpaces(e);
@@ -81,14 +89,14 @@ function editSelection() {
     var cursor = DocumentApp.getActiveDocument().getCursor();
     
     if (!cursor) 
-      throw 'Selet some text';
+      throw 'Please, select some text';
     var tableCell = cursor.getElement().getParent();
     
     while (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
       tableCell = tableCell.getParent(); 
       
       if (!tableCell)
-        throw 'Please, select some text'
+        throw 'Please, select some text';
     }
     var colIndex = tableCell.getParent().getChildIndex(tableCell);
     var table = tableCell.getParentTable();
@@ -134,7 +142,7 @@ function insertHorizontalRuleToTable(table, rowNum) {
     cell.setPaddingLeft(0);
     cell.setPaddingRight(0);
     cell.setPaddingTop(0);
-    if (j == 0) cell.insertHorizontalRule(0);
+    if (j === 0) cell.insertHorizontalRule(0);
     cell.editAsText().setText("").setFontSize(6);
   }
   
@@ -294,8 +302,7 @@ function formatSelectedListItems() {
       isListItem = true;      
       var element = elements[i].getElement();
       
-      while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT)
-      {
+      while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT) {
         element = element.getParent();
         
         if (element.getType() == DocumentApp.ElementType.DOCUMENT)
@@ -311,8 +318,7 @@ function formatSelectedListItems() {
     if (element.getType() == DocumentApp.ElementType.DOCUMENT)
           isListItem = false;
     
-    while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT)
-      {
+    while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT) {
         element = element.getParent();
         
         if (element.getType() == DocumentApp.ElementType.DOCUMENT)
@@ -341,7 +347,7 @@ function formatEverything() {
 }
 
 // Unsets the selection in the document.
-function unsetSelection(){
+function unsetSelection() {
   var doc = DocumentApp.getActiveDocument();
   var body = doc.getBody();
   var rangeBuilder2 = doc.newRange();

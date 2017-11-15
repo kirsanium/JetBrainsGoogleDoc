@@ -1,46 +1,68 @@
 <!DOCTYPE html>
+<style>
+.branding-below {
+  bottom: 56px;
+  top: 0;
+}
+</style>
+
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <html>
   <head>
     <base target="_top">
   </head>
   <body>
-    <div>
-      <button id="format-all-tables" onclick="runFormatAllTables()">Format all tables</button>
+  <div class="sidebar branding-below">
+    <div id="button-bar">
+      <div class="block">
+        <button class="action" id="format-all-tables" onclick="runFormatAllTables()">Format all tables</button>
+      </div>
+      <div class="block">
+        <button class="action" id="format-selected-tables" onclick="runFormatSelectedTables()">Format selected tables</button>
+      </div>
+      <div class="block">
+        <button class="action" id="format-all-list-items" onclick="runFormatAllListItems()">Format all lists</button>
+      </div>
+      <div class="block">
+        <button class="action" id="format-selected-list-items" onclick="runFormatSelectedListItems()">Format selected list items</button>
+      </div>
+      <div class="block">
+        <button class="action" id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
+      </div>
+      <div class="block">
+       <button class="action" id="format-everything" onclick="runFormatEverything()">Format everything</button>
+      </div>
     </div>
-    <div>
-      <button id="format-selected-tables" onclick="runFormatSelectedTables()">Format selected tables</button>
-    </div>
-    <div>
-      <button id="format-all-list-items" onclick="runFormatAllListItems()">Format all lists</button>
-    </div>
-    <div>
-      <button id="format-selected-list-items" onclick="runFormatSelectedListItems()">Format selected list items</button>
-    </div>
-    <div>
-      <button id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
-    </div>
-    <div>
-      <button id="format-everything" onclick="runFormatEverything()">Format everything</button>
-    </div>
+  </div>
     
     <script>
+    $('button.action').click(function() { 
+        $('#error').remove();
+    });
+    
     window.runFormatAllTables = function() {
-        google.script.run.formatAllTables();
+        google.script.run.withFailureHandler(showError).formatAllTables();
     }
     window.runFormatAllListItems = function() {
-        google.script.run.formatAllListItems();
+        google.script.run.withFailureHandler(showError).formatAllListItems();
     }
     window.runInsertSpaces = function() {
-        google.script.run.editSelection();
+        google.script.run.withFailureHandler(showError).editSelection();
     }
     window.runFormatSelectedTables = function(){
-        google.script.run.formatSelectedTables();
+        google.script.run.withFailureHandler(showError).formatSelectedTables();
     }
     window.runFormatSelectedListItems = function(){
-        google.script.run.formatSelectedListItems();
+        google.script.run.withFailureHandler(showError).formatSelectedListItems();
     }
     window.runFormatEverything = function(){
-        google.script.run.formatEverything();
+        google.script.run.withFailureHandler(showError).formatEverything();
+    }
+    
+    function showError(msg, element) {
+        var div = $('<div id="error" class="error">' + msg + '</div>');
+        $('#button-bar').after(div);
     }
     </script>
   </body>
