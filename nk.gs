@@ -157,7 +157,7 @@ function setStyleguideAlignment(e) {
   var regexInterval = regexNum + "\\-" + regexNum;
   
   if (e.getText().search(regexWord) != -1) {
-    e.getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.LEFT);
+    e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.LEFT);
   }
   else
   {
@@ -169,7 +169,7 @@ function setStyleguideAlignment(e) {
       for (var i = 0; i < found.length; i++) {
         
         if (found[i] == e.getText()) {
-          e.getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+          e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
           aligned = true;
           
           break;
@@ -184,7 +184,7 @@ function setStyleguideAlignment(e) {
         for (var i = 0; i < found.length; i++) {
           
           if (found[i] == e.getText()) {
-            e.getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+            e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
             break;
           }
         }
