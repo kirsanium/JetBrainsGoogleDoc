@@ -207,6 +207,28 @@ function formatSelectedTables() {
       isTable = true;      
       var element = elements[i].getElement();
       
+      if (element.getType() == DocumentApp.ElementType.TABLE) {
+        var numRows = element.getNumRows();
+        for (var j = 0; j < numRows; j++) {
+          var row = element.getRow(j);
+          var numCells = row.getNumCells();
+          for (var k = 0; k < numRows; k++) {
+            var cell = row.getCell(k);
+            var numChildren = cell.getNumChildren();
+            for (var f = 0; f < numChildren; f++)
+              if (cell.getChild(f).getType() == DocumentApp.ElementType.TABLE)
+                formatTable(cell.getChild(f));
+          }
+        }
+      }
+      
+      if (element.getType() == DocumentApp.ElementType.TABLE_CELL) {
+        var numChildren = element.getNumChildren();
+        for (var j = 0; j < numChildren; j++)
+          if (element.getChild(j).getType() == DocumentApp.ElementType.TABLE)
+            formatTable(element.getChild(j));
+      }
+      
       while (element.getType() != DocumentApp.ElementType.TABLE && element.getType() != DocumentApp.ElementType.DOCUMENT)
       {
         element = element.getParent();
@@ -305,6 +327,28 @@ function formatSelectedListItems() {
       isListItem = true;      
       var element = elements[i].getElement();
       
+      if (element.getType() == DocumentApp.ElementType.TABLE) {
+        var numRows = element.getNumRows();
+        for (var j = 0; j < numRows; j++) {
+          var row = element.getRow(j);
+          var numCells = row.getNumCells();
+          for (var k = 0; k < numRows; k++) {
+            var cell = row.getCell(k);
+            var numChildren = cell.getNumChildren();
+            for (var f = 0; f < numChildren; f++)
+              if (cell.getChild(f).getType() == DocumentApp.ElementType.LIST_ITEM)
+                formatListItem(cell.getChild(f));
+          }
+        }
+      }
+      
+      if (element.getType() == DocumentApp.ElementType.TABLE_CELL) {
+        var numChildren = element.getNumChildren();
+        for (var j = 0; j < numChildren; j++)
+          if (element.getChild(j).getType() == DocumentApp.ElementType.LIST_ITEM)
+            formatListItem(element.getChild(j));
+      }
+      
       while (element.getType() != DocumentApp.ElementType.LIST_ITEM && element.getType() != DocumentApp.ElementType.DOCUMENT) {
         element = element.getParent();
         
@@ -331,7 +375,7 @@ function formatSelectedListItems() {
       if (isListItem) formatListItem(element);
   }
   
-  if (!isListItem)
+  if (!isListItem) 
     throw 'Please, select a list';
 }
 
