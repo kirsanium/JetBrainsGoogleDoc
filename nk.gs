@@ -234,6 +234,9 @@ function formatSelectedTables() {
     
       if (isTable) formatTable(element);
   }
+  
+  if (!isTable)
+    throw 'Please, select a table';
 }
 
 // Sets alignment according to the styleguide to the table.
@@ -327,6 +330,9 @@ function formatSelectedListItems() {
     
       if (isListItem) formatListItem(element);
   }
+  
+  if (!isListItem)
+    throw 'Please, select a list';
 }
 
 // Formats the document according to the styleguide.
