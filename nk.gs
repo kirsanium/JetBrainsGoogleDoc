@@ -152,8 +152,8 @@ function insertHorizontalRuleToTable(table, rowNum) {
 // Sets alignment according to the styleguide.
 // @param e - element to apply the alignment to.
 function setStyleguideAlignment(e) {
-  var regexWord = "[^0-9\\.\\s\\- ]";
-  var regexNum = "(\\s)*[\\d ]+(\\.(\\d)+)?(\\s)*";
+  var regexWord = "[^0-9\\.\\s\\- %]";
+  var regexNum = "(\\s)*[\\d ]+(\\.(\\d)+)?%?(\\s)*";
   var regexInterval = regexNum + "\\-" + regexNum;
   
   if (e.getText().search(regexWord) != -1) {
@@ -165,14 +165,9 @@ function setStyleguideAlignment(e) {
     
     if (found) {
       
-      for (var i = 0; i < found.length; i++) {
-        
-        if (found[i] == e.getText()) {
-          e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
-          aligned = true;
-          
-          break;
-        }
+      if (found[0] == e.getText()) {
+        e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+        aligned = true;
       }
     }
     if (!aligned) {
@@ -180,12 +175,8 @@ function setStyleguideAlignment(e) {
       
       if (found) {
         
-        for (var i = 0; i < found.length; i++) {
-          
-          if (found[i] == e.getText()) {
-            e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
-            break;
-          }
+        if (found[0] == e.getText()) {
+          e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
         }
       }
     }
@@ -264,11 +255,24 @@ function formatSelectedTables() {
 // @param table - the table to apply he alignment to.
 function formatTable(table) {
   table.setBorderWidth(0);
-  
-  if (!table.getCell(1, 0).getChild(0).asParagraph()
-      .findElement(DocumentApp.ElementType.HORIZONTAL_RULE))
-    insertHorizontalRuleToTable(table, 0);
   var rowNum = table.getNumRows();
+  var ruleFound = false;
+  
+  for (var i = 0; i < rowNum; ++i) {
+    var row = table.getRow(i);
+    var cellNum = row.getNumCells();
+    for (var j = 0; j < cellNum; ++j) {
+      if (table.getCell(i, j).getChild(0).asParagraph()
+          .findElement(DocumentApp.ElementType.HORIZONTAL_RULE)) {
+        ruleFound = true;
+        break;
+      }
+    }
+  }
+  
+  if (!ruleFound) {
+    insertHorizontalRuleToTable(table, 0);
+  }
   
   for (var j = 0; j < rowNum; j++) {
     var row = table.getRow(j);
