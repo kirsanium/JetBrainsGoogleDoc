@@ -154,7 +154,7 @@ function insertHorizontalRuleToTable(table, rowNum) {
 function setStyleguideAlignment(table, column) {
   var regexWord = /[^0-9\.\s\- %]/;
   var regexNum = /\s*\d+.(?=\d+)?\d*%?\s*/;
-  var regexInterval = regexNum + "\\-" + regexNum;
+  var regexInterval = new RegExp(regexNum.source + "\-" + regexNum.source);
   var rowNum = table.getNumRows();
   var cell = table.getCell(rowNum - 1, column);
   
@@ -163,7 +163,10 @@ function setStyleguideAlignment(table, column) {
     for (var i = 0; i < rowNum; ++i) {
       var cell2align = table.getCell(i, column);
       if (cell2align.getColSpan() == 1) {
-        cell2align.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.LEFT);
+        var numChild = cell2align.getNumChildren();
+        for (var j = 0; j < numChild; ++j) {
+          cell2align.getChild(j).setAlignment(DocumentApp.HorizontalAlignment.LEFT);
+        }    
       }
     }
   }
@@ -178,7 +181,10 @@ function setStyleguideAlignment(table, column) {
         for (var i = 0; i < rowNum; ++i) {
           var cell2align = table.getCell(i, column);
           if (cell2align.getColSpan() == 1) {
-            cell2align.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+            var numChild = cell2align.getNumChildren();
+            for (var j = 0; j < numChild; ++j) {
+              cell2align.getChild(j).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+            }
           }        
         }
         aligned = true;
@@ -194,7 +200,10 @@ function setStyleguideAlignment(table, column) {
           for (var i = 0; i < rowNum; ++i) {
             var cell2align = table.getCell(i, column);
             if (cell2align.getColSpan() == 1) {
-              cell2align.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+              var numChild = cell2align.getNumChildren();
+              for (var j = 0; j < numChild; ++j) {
+                cell2align.getChild(j).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+              }
             }
           }
         }
