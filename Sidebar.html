@@ -4,6 +4,10 @@
   bottom: 56px;
   top: 0;
 }
+
+.logical-block {
+  margin-bottom: 40px;
+}
 </style>
 
 <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
@@ -15,23 +19,31 @@
   <body>
   <div class="sidebar branding-below">
     <div id="button-bar">
-      <div class="block">
-        <button class="action" id="format-all-tables" onclick="runFormatAllTables()">Format all tables</button>
+      <div class="logical-block">
+        <div class="block">
+          <button class="action" id="format-all-tables" onclick="runFormatAllTables()">Format all tables</button>
+        </div>
+        <div class="block">
+          <button class="action" id="format-selected-tables" onclick="runFormatSelectedTables()">Format selected tables</button>
+        </div>
       </div>
-      <div class="block">
-        <button class="action" id="format-selected-tables" onclick="runFormatSelectedTables()">Format selected tables</button>
+      <div class="logical-block">
+        <div class="block">
+          <button class="action" id="format-all-list-items" onclick="runFormatAllListItems()">Format all lists</button>
+        </div>
+        <div class="block">
+          <button class="action" id="format-selected-list-items" onclick="runFormatSelectedListItems()">Format selected list items</button>
+        </div>
       </div>
-      <div class="block">
-        <button class="action" id="format-all-list-items" onclick="runFormatAllListItems()">Format all lists</button>
+      <div class="logical-block">
+        <div class="block">
+          <button class="action" id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
+        </div>
       </div>
-      <div class="block">
-        <button class="action" id="format-selected-list-items" onclick="runFormatSelectedListItems()">Format selected list items</button>
-      </div>
-      <div class="block">
-        <button class="action" id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
-      </div>
-      <div class="block">
-       <button class="action" id="format-everything" onclick="runFormatEverything()">Format everything</button>
+      <div class="logical-block">
+        <div class="block">
+          <button class="action" id="format-everything" onclick="runFormatEverything()">Format everything</button>
+        </div>
       </div>
     </div>
   </div>

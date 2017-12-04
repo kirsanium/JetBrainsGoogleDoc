@@ -159,8 +159,7 @@ function setStyleguideAlignment(e) {
   if (e.getText().search(regexWord) != -1) {
     e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.LEFT);
   }
-  else
-  {
+  else {
     var aligned = false;
     var found = e.getText().match(regexNum);
     
@@ -389,20 +388,6 @@ function formatEverything() {
     rangeBuilder.addElement(paragraphs[i]);
   }
   
-  doc.setSelection(rangeBuilder.build());
-  editSelection();
-  unsetSelection();
   formatAllTables();
   formatAllListItems();
-}
-
-// Unsets the selection in the document.
-function unsetSelection() {
-  var doc = DocumentApp.getActiveDocument();
-  var body = doc.getBody();
-  var rangeBuilder2 = doc.newRange();
-  var text = body.editAsText().appendText(" ");
-  rangeBuilder2.addElement(text, body.editAsText().getText().length - 1, body.editAsText().getText().length - 1);
-  doc.setSelection(rangeBuilder2.build());
-  text.deleteText(body.editAsText().getText().length - 1, body.editAsText().getText().length - 1);
 }
