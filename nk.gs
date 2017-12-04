@@ -151,38 +151,58 @@ function insertHorizontalRuleToTable(table, rowNum) {
 
 // Sets alignment according to the styleguide.
 // @param e - element to apply the alignment to.
-function setStyleguideAlignment(e) {
+function setStyleguideAlignment(table, column) {
   var regexWord = /[^0-9\.\s\- %]/;
   var regexNum = /\s*\d+.(?=\d+)?\d*%?\s*/;
   var regexInterval = regexNum + "\\-" + regexNum;
+  var rowNum = table.getNumRows();
+  var cell = table.getCell(rowNum - 1, column);
   
-  if (e.getText().search(regexWord) != -1) {
-    e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.LEFT);
+  if (cell.getText().search(regexWord) != -1) {
+    
+    for (var i = 0; i < rowNum; ++i) {
+      var cell2align = table.getCell(i, column);
+      if (cell2align.getColSpan() == 1) {
+        cell2align.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.LEFT);
+      }
+    }
   }
   else {
     var aligned = false;
-    var found = e.getText().match(regexNum);
+    var found = cell.getText().match(regexNum);
     
     if (found) {
       
-      if (found[0] == e.getText()) {
-        e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+      if (found[0] == cell.getText()) {
+        
+        for (var i = 0; i < rowNum; ++i) {
+          var cell2align = table.getCell(i, column);
+          if (cell2align.getColSpan() == 1) {
+            cell2align.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+          }        
+        }
         aligned = true;
       }
     }
     if (!aligned) {
-      found = e.getText().match(regexInterval);
+      found = cell.getText().match(regexInterval);
       
       if (found) {
         
-        if (found[0] == e.getText()) {
-          e.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+        if (found[0] == cell.getText()) {
+          
+          for (var i = 0; i < rowNum; ++i) {
+            var cell2align = table.getCell(i, column);
+            if (cell2align.getColSpan() == 1) {
+              cell2align.getChild(0).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+            }
+          }
         }
       }
     }
   }
   
-  return e;
+  return cell;
 }
 
 // Sets alignment according to the styleguide to all selected tables.
@@ -274,14 +294,11 @@ function formatTable(table) {
     insertHorizontalRuleToTable(table, 0);
   }
   
-  for (var j = 0; j < rowNum; j++) {
-    var row = table.getRow(j);
-    var cellNum = row.getNumCells();
+  var row = table.getRow(rowNum - 1);
+  var cellNum = row.getNumCells();
     
-    for (var k = 0; k < cellNum; k++) {
-      var cell = row.getCell(k);
-      setStyleguideAlignment(cell);
-    }
+  for (var k = 0; k < cellNum; k++) {
+    setStyleguideAlignment(table, k);
   }
 }
 
