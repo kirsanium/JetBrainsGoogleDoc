@@ -152,8 +152,8 @@ function insertHorizontalRuleToTable(table, rowNum) {
 // Sets alignment according to the styleguide.
 // @param e - element to apply the alignment to.
 function setStyleguideAlignment(e) {
-  var regexWord = "[^0-9\\.\\s\\- %]";
-  var regexNum = "(\\s)*[\\d ]+(\\.(\\d)+)?%?(\\s)*";
+  var regexWord = /[^0-9\.\s\- %]/;
+  var regexNum = /\s*\d+.(?=\d+)?\d*%?\s*/;
   var regexInterval = regexNum + "\\-" + regexNum;
   
   if (e.getText().search(regexWord) != -1) {
