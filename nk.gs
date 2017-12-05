@@ -42,6 +42,8 @@ function insertThinSpaces(text, start, end) {
   var newText = oldText;
   var numberCount = 0;
   
+  newText = newText.replace(/ /g, '');
+  
   for (var i = newText.length - 1; i > 0; i--) {
     
     if (isNumber(newText[i])) {
@@ -153,7 +155,7 @@ function insertHorizontalRuleToTable(table, rowNum) {
 // @param e - element to apply the alignment to.
 function setStyleguideAlignment(table, column) {
   var regexWord = /[^0-9\.\s\- %]/;
-  var regexNum = /\s*\d+.(?=\d+)?\d*%?\s*/;
+  var regexNum = /\s*[\d ]+.(?=[\d ]+)?[\d ]*%?\s*/;
   var regexInterval = new RegExp(regexNum.source + "\-" + regexNum.source);
   var rowNum = table.getNumRows();
   var cell = table.getCell(rowNum - 1, column);
