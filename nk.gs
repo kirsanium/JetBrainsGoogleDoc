@@ -42,8 +42,6 @@ function insertThinSpaces(text, start, end) {
   var newText = oldText;
   var numberCount = 0;
   
-  newText = newText.replace(/ /g, '');
-  
   for (var i = newText.length - 1; i > 0; i--) {
     
     if (isNumber(newText[i])) {
@@ -90,57 +88,27 @@ function editSelection() {
   } else {
     var cursor = DocumentApp.getActiveDocument().getCursor();
     
-    if (!cursor) {
-      throw 'Please, select a number';
-    }
+    if (!cursor) 
+      throw 'Please, select some text';
+    var tableCell = cursor.getElement().getParent();
     
-    var text = cursor.getSurroundingText().getText();
-    var cursorOffset = cursor.getSurroundingTextOffset();
-    var startIndex = 0;
-    var endIndex = text.length - 1;
-    for (var i = cursorOffset; i < text.length; ++i) {
-      if (isNumber(text[i])) {
-        continue;
-      }
-      if (text[i] == ' ') {
-        endIndex = i;   
-        break;
-      } 
-      throw 'Please, select a number';
+    while (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
+      tableCell = tableCell.getParent(); 
+      
+      if (!tableCell)
+        throw 'Please, select some text';
     }
-    for (var i = cursorOffset; i >= 0; --i) {
-      if (isNumber(text[i])) {
-        continue;
-      }
-      if (text[i] == ' ') {
-        startIndex = i;   
-        break;
-      }  
-      throw 'Please, select a number';
-    }
-
-    insertThinSpaces(cursor.getSurroundingText(), startIndex, endIndex);
+    var colIndex = tableCell.getParent().getChildIndex(tableCell);
+    var table = tableCell.getParentTable();
+    var numRows = table.getNumChildren();
     
-//    var tableCell = cursor.getElement().getParent();
-//    
-//    while (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
-//      tableCell = tableCell.getParent(); 
-//      
-//      if (!tableCell) {
-//        throw 'Please, select some text';
-//      }
-//    }
-//    var colIndex = tableCell.getParent().getChildIndex(tableCell);
-//    var table = tableCell.getParentTable();
-//    var numRows = table.getNumChildren();
-//    
-//    for (var i = 0; i < numRows; i++) {
-//      var currentCell = table.getChild(i).getChild(colIndex);
-//      var textElements = getTextChildren(currentCell);
-//      textElements.forEach(function(e) {
-//                   insertThinSpaces(e);
-//      });
-//    }
+    for (var i = 0; i < numRows; i++) {
+      var currentCell = table.getChild(i).getChild(colIndex);
+      var textElements = getTextChildren(currentCell);
+      textElements.forEach(function(e) {
+                   insertThinSpaces(e);
+      });
+    }
   }
 }
 
@@ -185,7 +153,7 @@ function insertHorizontalRuleToTable(table, rowNum) {
 // @param e - element to apply the alignment to.
 function setStyleguideAlignment(table, column) {
   var regexWord = /[^0-9\.\s\- %]/;
-  var regexNum = /\s*[\d ]+.(?=[\d ]+)?[\d ]*%?\s*/;
+  var regexNum = /\s*\d+.(?=\d+)?\d*%?\s*/;
   var regexInterval = new RegExp(regexNum.source + "\-" + regexNum.source);
   var rowNum = table.getNumRows();
   var cell = table.getCell(rowNum - 1, column);
