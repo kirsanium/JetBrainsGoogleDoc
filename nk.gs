@@ -160,6 +160,11 @@ function setStyleguideAlignment(table, column) {
   var rowNum = table.getNumRows();
   var cell = table.getCell(rowNum - 1, column);
   
+  while (!(/\S/.test(cell.getText())) && rowNum > 1) {
+    rowNum -= 1;
+    cell = table.getCell(rowNum - 1, column);
+  }
+  
   if (cell.getText().search(regexWord) != -1) {
     
     for (var i = 0; i < rowNum; ++i) {
@@ -201,8 +206,10 @@ function setStyleguideAlignment(table, column) {
           
           for (var i = 0; i < rowNum; ++i) {
             var cell2align = table.getCell(i, column);
+            
             if (cell2align.getColSpan() == 1) {
               var numChild = cell2align.getNumChildren();
+              
               for (var j = 0; j < numChild; ++j) {
                 cell2align.getChild(j).setAlignment(DocumentApp.HorizontalAlignment.CENTER);
               }
