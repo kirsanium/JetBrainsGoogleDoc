@@ -300,7 +300,7 @@ function formatTable(table) {
     var row = table.getRow(i);
     var cellNum = row.getNumCells();
     for (var j = 0; j < cellNum; ++j) {
-      if (table.getCell(i, j).getChild(0).asParagraph()
+      if (table.getCell(i, j).getChild(0)
           .findElement(DocumentApp.ElementType.HORIZONTAL_RULE)) {
         ruleFound = true;
         break;
