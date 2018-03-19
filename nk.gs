@@ -430,3 +430,83 @@ function formatEverything() {
   formatAllTables();
   formatAllListItems();
 }
+
+function changeStyle() {
+  var body = DocumentApp.getActiveDocument().getBody();
+  var paragraphs = getParagraphChildren(body);
+  var normalAttrs = {};
+  var titleAttrs = {};
+  var header1Attrs = {};
+  var header2Attrs = {};
+  var header3Attrs = {};
+  normalAttrs[DocumentApp.Attribute.FONT_FAMILY] = titleAttrs[DocumentApp.Attribute.FONT_FAMILY] =
+                                                   header1Attrs[DocumentApp.Attribute.FONT_FAMILY] = 
+                                                   header2Attrs[DocumentApp.Attribute.FONT_FAMILY] = 
+                                                   header3Attrs[DocumentApp.Attribute.FONT_FAMILY] = "Open Sans";
+  
+  normalAttrs[DocumentApp.Attribute.LINE_SPACING] = header1Attrs[DocumentApp.Attribute.LINE_SPACING] =
+                                                    header2Attrs[DocumentApp.Attribute.LINE_SPACING] = 
+                                                    header3Attrs[DocumentApp.Attribute.LINE_SPACING] = 1.3;
+  titleAttrs[DocumentApp.Attribute.LINE_SPACING] = 1.2;
+  
+  normalAttrs[DocumentApp.Attribute.SPACING_BEFORE] = header1Attrs[DocumentApp.Attribute.SPACING_BEFORE] =
+                                                    header2Attrs[DocumentApp.Attribute.SPACING_BEFORE] = 
+                                                    header3Attrs[DocumentApp.Attribute.SPACING_BEFORE] = 0;
+  titleAttrs[DocumentApp.Attribute.SPACING_BEFORE] = 50;
+  
+  normalAttrs[DocumentApp.Attribute.SPACING_AFTER] = 0;
+  header1Attrs[DocumentApp.Attribute.SPACING_AFTER] = header2Attrs[DocumentApp.Attribute.SPACING_AFTER] = 8;
+  header3Attrs[DocumentApp.Attribute.SPACING_AFTER] = 2;
+  titleAttrs[DocumentApp.Attribute.SPACING_AFTER] = 20;
+  
+  normalAttrs[DocumentApp.Attribute.FONT_SIZE] = 11;
+  header1Attrs[DocumentApp.Attribute.FONT_SIZE] = 20;
+  header2Attrs[DocumentApp.Attribute.FONT_SIZE] = 14;
+  header3Attrs[DocumentApp.Attribute.FONT_SIZE] = 11;
+  titleAttrs[DocumentApp.Attribute.FONT_SIZE] = 30;
+  
+  normalAttrs[DocumentApp.Attribute.BOLD] = false;
+  titleAttrs[DocumentApp.Attribute.BOLD] = header1Attrs[DocumentApp.Attribute.BOLD] = 
+                                                   header2Attrs[DocumentApp.Attribute.BOLD] = 
+                                                   header3Attrs[DocumentApp.Attribute.BOLD] = true;
+  
+  
+  
+  for (var i = 0; i < paragraphs.length; i++) {
+    var headingType = paragraphs[i].getHeading();
+    
+    switch(headingType) {
+      case DocumentApp.ParagraphHeading.NORMAL:
+        paragraphs[i].setAttributes(normalAttrs);
+        break;
+      case DocumentApp.ParagraphHeading.HEADING1:
+        paragraphs[i].setAttributes(header1Attrs);
+        break;
+      case DocumentApp.ParagraphHeading.HEADING2:
+        paragraphs[i].setAttributes(header2Attrs);
+        break;
+      case DocumentApp.ParagraphHeading.HEADING3:
+        paragraphs[i].setAttributes(header3Attrs);
+        break;
+      case DocumentApp.ParagraphHeading.TITLE:
+        paragraphs[i].setAttributes(titleAttrs);
+        break;
+    }
+  }
+}
+
+function getParagraphChildren(element) {
+  var elements = [];
+  
+  for (var i = 0; i < element.getNumChildren(); i++) {
+    var child = element.getChild(i);
+    
+    if (child.getType() == DocumentApp.ElementType.PARAGRAPH)
+      elements.push(child);
+    
+    if (child.getNumChildren)
+      elements = elements.concat(getParagraphChildren(child));
+  }
+  
+  return elements;
+}

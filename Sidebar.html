@@ -45,6 +45,11 @@
            <button class="action" id="insert-spaces" onclick="runInsertSpaces()">Insert thin spaces</button>
         </div>
       </div>
+      <div class="logical-block">
+        <div class="block">
+           <button class="action" id="change-style" onclick="runChangeStyle()">Change style of a document</button>
+        </div>
+      </div>
     </div>
   </div>
     
@@ -70,6 +75,9 @@
     }
     window.runFormatEverything = function(){
         google.script.run.withFailureHandler(showError).formatEverything();
+    }
+    window.runChangeStyle = function() {
+        google.script.run.withFailureHandler(showError).changeStyle();
     }
     
     function showError(msg, element) {
