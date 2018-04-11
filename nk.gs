@@ -106,6 +106,7 @@ function editSelection() {
     
     for (var i = 0; i < numRows; i++) {
       var currentCell = table.getChild(i).getChild(colIndex);
+             
       var textElements = getTextChildren(currentCell);
       textElements.forEach(function(e) {
                    insertThinSpaces(e);
@@ -292,6 +293,10 @@ function formatSelectedTables() {
 // Sets alignment according to the styleguide to the table.
 // @param table - the table to apply he alignment to.
 function formatTable(table) {
+  var attrs = table.getAttributes();
+  for (var att in attrs) {
+   Logger.log(att + ":" + attrs[att]);
+ }
   table.setBorderWidth(0);
   var rowNum = table.getNumRows();
   var ruleFound = false;
@@ -305,6 +310,18 @@ function formatTable(table) {
         ruleFound = true;
         break;
       }
+            /****TESTING****/
+      if (i == 0 && j == 0) 
+      {        attrs = table.getCell(i, j).getAttributes(); 
+
+        for (var att in attrs) {
+   Logger.log(att + ":" + attrs[att]);
+ }
+//       // attrs[DocumentApp.Attribute.BORDER_COLOR] = '#FF0000';
+//        attrs[DocumentApp.Attribute.BORDER_WIDTH] += 3;
+//        table.getCell(i, j).setAttributes(attrs);
+      }
+      /****TESTING****/
     }
   }
   
@@ -470,7 +487,11 @@ function changeStyle() {
                                                    header2Attrs[DocumentApp.Attribute.BOLD] = 
                                                    header3Attrs[DocumentApp.Attribute.BOLD] = true;
   
-  
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.NORMAL, normalAttrs);
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.TITLE, titleAttrs);
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING1, header1Attrs);
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING2, header2Attrs);
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING3, header3Attrs);
   
   for (var i = 0; i < paragraphs.length; i++) {
     var headingType = paragraphs[i].getHeading();
