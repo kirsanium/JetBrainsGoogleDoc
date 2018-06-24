@@ -531,3 +531,72 @@ function getParagraphChildren(element) {
   
   return elements;
 }
+
+function swapRows(table, firstRowIndex, secondRowIndex) {
+  var secondRow = table.removeRow(secondRowIndex);
+  var firstRow = table.removeRow(firstRowIndex);
+  table.insertTableRow(firstRowIndex, secondRow);
+  table.insertTableRow(secondRowIndex, firstRow);
+}
+
+function swapAdjacentRows() {
+  var cursor = DocumentApp.getActiveDocument().getCursor();
+    
+  if (!cursor) 
+    throw 'Please, click on row';
+  var tableRow = cursor.getElement().getParent();
+  
+  while (tableRow.getType() != DocumentApp.ElementType.TABLE_ROW) {
+    tableRow = tableRow.getParent(); 
+    
+    if (!tableRow)
+      throw 'Please, click on row';
+  }
+  var table = tableRow.getParentTable();
+  var index = table.getChildIndex(tableRow);
+  
+  if (index < table.getNumRows() - 1)
+    swapRows(table, index, index + 1)
+}
+
+function isLarger(firstString, secondString) {
+  firstString = firstString.replace(/\u2009/g, '');
+  secondString = secondString.replace(/\u2009/g, '');
+  var firstNumber = parseInt(firstString);
+  var secondNumber = parseInt(secondString);
+  
+  if (firstNumber == NaN || secondNumber == NaN)
+    return firstString > secondString;
+  else 
+    return firstNumber > secondNumber;
+}
+
+function sortTable(isDesc) {
+  var cursor = DocumentApp.getActiveDocument().getCursor();
+    
+  if (!cursor) 
+    throw 'Please, click on column';
+  var tableCell = cursor.getElement().getParent();
+  
+  while (tableCell.getType() != DocumentApp.ElementType.TABLE_CELL) {
+    tableCell = tableCell.getParent();
+  }
+  var tableRow = tableCell.getParent();
+  var colIndex = tableRow.getChildIndex(tableCell);
+  var table = tableRow.getParentTable();
+  var size = table.getNumRows();
+  
+  for (var i = 1; i < size; i++) {
+    for (var j = size - 1; j > i; j--) {
+      var firstCell = table.getRow(j - 1).getCell(colIndex);
+      var secondCell = table.getRow(j).getCell(colIndex);
+      var isFirstLarger = isLarger(firstCell.getText(), secondCell.getText());
+      
+      if (isFirstLarger && isDesc)
+        swapRows(table, j - 1, j);
+      else if (!isFirstLarger && !isDesc)
+        swapRows(table, j - 1, j);
+    }
+  }
+}
+  

@@ -50,6 +50,16 @@
            <button class="action" id="change-style" onclick="runChangeStyle()">Change style of a document</button>
         </div>
       </div>
+      <div class="logical-block">
+        <div class="block">
+           <button class="action" id="swap-rows" onclick="runSwapAdjacentRows()">Swap adjacent rows</button>
+        </div>
+      </div>
+      <div class="logical-block">
+        <div class="block">
+           <button class="action" id="sort-table" onclick="runSortTable()">Sort table</button>
+        </div>
+      </div>
     </div>
   </div>
     
@@ -57,7 +67,7 @@
     $('button.action').click(function() { 
         $('#error').remove();
     });
-    
+    window.isDesc = true;
     window.runFormatAllTables = function() {
         google.script.run.withFailureHandler(showError).formatAllTables();
     }
@@ -78,6 +88,13 @@
     }
     window.runChangeStyle = function() {
         google.script.run.withFailureHandler(showError).changeStyle();
+    }
+    window.runSwapAdjacentRows = function() {
+        google.script.run.withFailureHandler(showError).swapAdjacentRows();
+    }
+    window.runSortTable = function() {
+        google.script.run.withFailureHandler(showError).sortTable(window.isDesc);
+        window.isDesc = !window.isDesc;
     }
     
     function showError(msg, element) {
