@@ -1,6 +1,6 @@
 function doGet( e ) {
   QUnit.urlParams( e.parameter );
-  QUnit.config({ title: "Unit tests for my project" });
+  QUnit.config({ title: "Unit tests" });
   QUnit.load( tests );
   return QUnit.getHtml();
 };

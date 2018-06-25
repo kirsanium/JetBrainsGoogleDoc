@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<style>
+.control-buttons {
+  bottom: 10px;
+  right: 10px;
+  position: fixed;
+}
+
+.default-button {
+  bottom: 10px;
+  left: 0px;
+  position: fixed;
+}
+</style>
+
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<html>
+  <head>
+  </head>
+  <body>
+  <table border="0" id="table">
+    <tr height="30">
+      <th width="100">Text Style</th>
+      <th width="100">Line spacing</th>
+      <th width="100">Spacing before</th>
+      <th width="100">Spacing after</th>
+      <th width="100">Font size</th>
+      <th width="100">Bold</th>
+    </tr>
+    <tr height="30">
+      <td>
+        Normal
+      </td>
+      <td>
+        <input type="text" id="normalLineSpacing" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="normalSpacingBefore" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="normalSpacingAfter" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="normalFontSize" style="width: 40px;">
+      </td>
+      <td>
+        <input type="checkbox" id="normalBold">
+      </td>
+    </tr>
+    <tr height="30">
+      <td>
+        Header 1
+      </td>
+      <td>
+        <input type="text" id="header1LineSpacing" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header1SpacingBefore" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header1SpacingAfter" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header1FontSize" style="width: 40px;">
+      </td>
+      <td>
+        <input type="checkbox" id="header1Bold">
+      </td>
+    </tr>
+    <tr height="30">
+      <td>
+        Header 2
+      </td>
+      <td>
+        <input type="text" id="header2LineSpacing" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header2SpacingBefore" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header2SpacingAfter" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header2FontSize" style="width: 40px;">
+      </td>
+      <td>
+        <input type="checkbox" id="header2Bold">
+      </td>
+    </tr>
+    <tr height="30">
+      <td>
+        Header 3
+      </td>
+      <td>
+        <input type="text" id="header3LineSpacing" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header3SpacingBefore" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header3SpacingAfter" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="header3FontSize" style="width: 40px;">
+      </td>
+      <td>
+        <input type="checkbox" id="header3Bold">
+      </td>
+    </tr>
+    <tr height="30">
+      <td>
+        Title
+      </td>
+      <td>
+        <input type="text" id="titleLineSpacing" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="titleSpacingBefore" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="titleSpacingAfter" style="width: 40px;">
+      </td>
+      <td>
+        <input type="text" id="titleFontSize" style="width: 40px;">
+      </td>
+      <td>
+        <input type="checkbox" id="titleBold" >
+      </td>
+    </tr>
+    <tr height="20">
+    </tr>
+    <tr height="30">
+      <td>List indentation</td>
+      <td>
+        <input type="text" id="listIndentation" style="width: 40px;">
+      </td>
+    </tr>
+  </table>
+  <div class="default-button">
+    <button id="defaultButton" onclick="returnDefaultProperties()">Back to default values</button>
+  </div>
+  <div class="control-buttons">
+     <div class="inline form-group">
+       <button id="cancelButton" onclick="google.script.host.close()">Close</button>
+     </div>
+     <div class="inline form-group">
+       <button class="action" id="applyButton" onclick="runApply()">Apply</button>
+     </div>
+  </div>
+  
+  <script>
+    window.addEventListener('load', function() {
+      google.script.run.withSuccessHandler(fillFields).getUserProperties();
+    });
+
+    function fillFields(userProperties) {
+       $('#normalLineSpacing').val(userProperties[0]);
+       $('#normalSpacingBefore').val(userProperties[1]);
+       $('#normalSpacingAfter').val(userProperties[2]);
+       $('#normalFontSize').val(userProperties[3]);
+       if (userProperties[4] === 'true')
+         $('#normalBold').prop('checked', true);
+       else $('#normalBold').prop('checked', false);
+       
+       $('#titleLineSpacing').val(userProperties[5]);
+       $('#titleSpacingBefore').val(userProperties[6]);
+       $('#titleSpacingAfter').val(userProperties[7]);
+       $('#titleFontSize').val(userProperties[8]);
+       if (userProperties[9] === 'true')
+         $('#titleBold').prop('checked', true);
+       else $('#titleBold').prop('checked', false);
+       
+       $('#header1LineSpacing').val(userProperties[10]);
+       $('#header1SpacingBefore').val(userProperties[11]);
+       $('#header1SpacingAfter').val(userProperties[12]);
+       $('#header1FontSize').val(userProperties[13]);
+       if (userProperties[14] === 'true')
+         $('#header1Bold').prop('checked', true);
+       else $('#header1Bold').prop('checked', false);
+       
+       $('#header2LineSpacing').val(userProperties[15]);
+       $('#header2SpacingBefore').val(userProperties[16]);
+       $('#header2SpacingAfter').val(userProperties[17]);
+       $('#header2FontSize').val(userProperties[18]);
+       if (userProperties[19] === 'true')
+         $('#header2Bold').prop('checked', true);
+       else $('#header2Bold').prop('checked', false);
+       
+       $('#header3LineSpacing').val(userProperties[20]);
+       $('#header3SpacingBefore').val(userProperties[21]);
+       $('#header3SpacingAfter').val(userProperties[22]);
+       $('#header3FontSize').val(userProperties[23]);
+       if (userProperties[24] === 'true')
+         $('#header3Bold').prop('checked', true);
+       else $('#header3Bold').prop('checked', false);
+       
+       var listIndentation = parseFloat(userProperties[25]);
+       var actualValue = listIndentation / 28.8;
+       $('#listIndentation').val(actualValue.toString());
+    }
+
+    window.returnDefaultProperties = function() {
+      google.script.run.withFailureHandler(showError).setDefaultUserProperties();
+      google.script.run.withSuccessHandler(fillFields).getUserProperties();
+    }
+    
+    window.runApply = function() {
+      var normalBold;
+      var titleBold;
+      var header1Bold;
+      var header2Bold;
+      var header3Bold;
+      
+      if ( $('#normalBold').prop('checked') ) normalBold = 'true';
+      else normalBold = 'false';
+      if ( $('#titleBold').prop('checked') ) titleBold = 'true';
+      else titleBold = 'false';
+      if ( $('#header1Bold').prop('checked') ) header1Bold = 'true';
+      else header1Bold = 'false';
+      if ( $('#header2Bold').prop('checked') ) header2Bold = 'true';
+      else header2Bold = 'false';
+      if ( $('#header3Bold').prop('checked') ) header3Bold = 'true';
+      else header3Bold = 'false';
+      
+      var actualIndentation = parseFloat($('#listIndentation').val());
+      var listIndentation = actualIndentation * 28.8;
+      
+      var properties = {
+      'listNestingPoint'      : '7.2',
+      
+      'normalLineSpacing'     :  $('#normalLineSpacing').val(),
+      'normalSpacingBefore'   :  $('#normalSpacingBefore').val(),
+      'normalSpacingAfter'    :  $('#normalSpacingAfter').val(),
+      'normalFontSize'        :  $('#normalFontSize').val(),
+      'normalBold'            :  normalBold,
+        
+      'titleLineSpacing'      :  $('#titleLineSpacing').val(),
+      'titleSpacingBefore'    :  $('#titleSpacingBefore').val(),
+      'titleSpacingAfter'     :  $('#titleSpacingAfter').val(),
+      'titleFontSize'         :  $('#titleFontSize').val(),
+      'titleBold'             :  titleBold,
+        
+      'header1LineSpacing'    :  $('#header1LineSpacing').val(),
+      'header1SpacingBefore'  :  $('#header1SpacingBefore').val(),
+      'header1SpacingAfter'   :  $('#header1SpacingAfter').val(),
+      'header1FontSize'       :  $('#header1FontSize').val(),
+      'header1Bold'           :  header1Bold,
+        
+      'header2LineSpacing'    :  $('#header2LineSpacing').val(),
+      'header2SpacingBefore'  :  $('#header2SpacingBefore').val(),
+      'header2SpacingAfter'   :  $('#header2SpacingAfter').val(),
+      'header2FontSize'       :  $('#header2FontSize').val(),
+      'header2Bold'           :  header2Bold,
+        
+      'header3LineSpacing'    :  $('#header3LineSpacing').val(),
+      'header3SpacingBefore'  :  $('#header3SpacingBefore').val(),
+      'header3SpacingAfter'   :  $('#header3SpacingAfter').val(),
+      'header3FontSize'       :  $('#header3FontSize').val(),
+      'header3Bold'           :  header3Bold,
+      
+      'listIndentation'       :  listIndentation.toString()
+      }
+      google.script.run.withFailureHandler(showError).withSuccessHandler(applySuccess).applyProperties(properties);
+      google.script.host.close();
+    }
+    
+    function applySuccess() {
+      $('#error').remove();
+    }
+    
+    function showError(msg) {
+      if (document.getElementById('error')) return;
+      var div = $('<div id="error" class="error">' + msg + '</div>');
+      $('#table').after(div);
+    }
+    
+  </script>
+  
+  </body>
+</html>

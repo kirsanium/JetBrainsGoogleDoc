@@ -9,10 +9,16 @@ function showSidebar() {
   DocumentApp.getUi().showSidebar(ui);
 }
 
+function onInstall(e) {
+  setDefaultUserProperties();
+}
+
 function onOpen(e) {
   DocumentApp.getUi().createAddonMenu()
       .addItem('Start', 'showSidebar')
+      .addItem('Show menu', 'showMenu')
       .addToUi();
+    setDefaultUserProperties();
 }
 
 function showError() {
@@ -352,7 +358,7 @@ function formatAllTables() {
 // @param listItem - the listItem to set the indentation to.
 function formatListItem(listItem) {
   var nestingLevel = listItem.getNestingLevel() + 1;
-  var point = 7.2;
+  var point = parseFloat(PropertiesService.getUserProperties().getProperty('listIndentation'));
   Logger.log(listItem.getIndentFirstLine());
   Logger.log(listItem.getIndentStart());
   listItem.setIndentFirstLine(nestingLevel * point);
@@ -451,44 +457,50 @@ function formatEverything() {
 function changeStyle() {
   var body = DocumentApp.getActiveDocument().getBody();
   var paragraphs = getParagraphChildren(body);
+  var userProperties = PropertiesService.getUserProperties();
   var normalAttrs = {};
   var titleAttrs = {};
   var header1Attrs = {};
   var header2Attrs = {};
   var header3Attrs = {};
-  normalAttrs[DocumentApp.Attribute.FONT_FAMILY] = titleAttrs[DocumentApp.Attribute.FONT_FAMILY] =
-                                                   header1Attrs[DocumentApp.Attribute.FONT_FAMILY] = 
-                                                   header2Attrs[DocumentApp.Attribute.FONT_FAMILY] = 
-                                                   header3Attrs[DocumentApp.Attribute.FONT_FAMILY] = "Open Sans";
+  normalAttrs[DocumentApp.Attribute.FONT_FAMILY]  =
+  titleAttrs[DocumentApp.Attribute.FONT_FAMILY]   =
+  header1Attrs[DocumentApp.Attribute.FONT_FAMILY] = 
+  header2Attrs[DocumentApp.Attribute.FONT_FAMILY] = 
+  header3Attrs[DocumentApp.Attribute.FONT_FAMILY] = "Open Sans";
   
-  normalAttrs[DocumentApp.Attribute.LINE_SPACING] = header1Attrs[DocumentApp.Attribute.LINE_SPACING] =
-                                                    header2Attrs[DocumentApp.Attribute.LINE_SPACING] = 
-                                                    header3Attrs[DocumentApp.Attribute.LINE_SPACING] = 1.3;
-  titleAttrs[DocumentApp.Attribute.LINE_SPACING] = 1.2;
+  normalAttrs[DocumentApp.Attribute.LINE_SPACING]  = parseFloat(userProperties.getProperty('normalLineSpacing'));
+  header1Attrs[DocumentApp.Attribute.LINE_SPACING] = parseFloat(userProperties.getProperty('header1LineSpacing'));
+  header2Attrs[DocumentApp.Attribute.LINE_SPACING] = parseFloat(userProperties.getProperty('header2LineSpacing')); 
+  header3Attrs[DocumentApp.Attribute.LINE_SPACING] = parseFloat(userProperties.getProperty('header3LineSpacing'));
+  titleAttrs[DocumentApp.Attribute.LINE_SPACING]   = parseFloat(userProperties.getProperty('titleLineSpacing'));
   
-  normalAttrs[DocumentApp.Attribute.SPACING_BEFORE] = header1Attrs[DocumentApp.Attribute.SPACING_BEFORE] =
-                                                    header2Attrs[DocumentApp.Attribute.SPACING_BEFORE] = 
-                                                    header3Attrs[DocumentApp.Attribute.SPACING_BEFORE] = 0;
-  titleAttrs[DocumentApp.Attribute.SPACING_BEFORE] = 50;
+  normalAttrs[DocumentApp.Attribute.SPACING_BEFORE]  = parseFloat(userProperties.getProperty('normalSpacingBefore'));
+  header1Attrs[DocumentApp.Attribute.SPACING_BEFORE] = parseFloat(userProperties.getProperty('header1SpacingBefore'));
+  header2Attrs[DocumentApp.Attribute.SPACING_BEFORE] = parseFloat(userProperties.getProperty('header2SpacingBefore'));
+  header3Attrs[DocumentApp.Attribute.SPACING_BEFORE] = parseFloat(userProperties.getProperty('header3SpacingBefore'));
+  titleAttrs[DocumentApp.Attribute.SPACING_BEFORE]   = parseFloat(userProperties.getProperty('titleSpacingBefore'));
   
-  normalAttrs[DocumentApp.Attribute.SPACING_AFTER] = 0;
-  header1Attrs[DocumentApp.Attribute.SPACING_AFTER] = header2Attrs[DocumentApp.Attribute.SPACING_AFTER] = 8;
-  header3Attrs[DocumentApp.Attribute.SPACING_AFTER] = 2;
-  titleAttrs[DocumentApp.Attribute.SPACING_AFTER] = 20;
+  normalAttrs[DocumentApp.Attribute.SPACING_AFTER]  = parseFloat(userProperties.getProperty('normalSpacingAfter'));
+  header1Attrs[DocumentApp.Attribute.SPACING_AFTER] = parseFloat(userProperties.getProperty('header1SpacingAfter'));
+  header2Attrs[DocumentApp.Attribute.SPACING_AFTER] = parseFloat(userProperties.getProperty('header2SpacingAfter'));
+  header3Attrs[DocumentApp.Attribute.SPACING_AFTER] = parseFloat(userProperties.getProperty('header3SpacingAfter'));
+  titleAttrs[DocumentApp.Attribute.SPACING_AFTER]   = parseFloat(userProperties.getProperty('titleSpacingAfter'));
   
-  normalAttrs[DocumentApp.Attribute.FONT_SIZE] = 11;
-  header1Attrs[DocumentApp.Attribute.FONT_SIZE] = 20;
-  header2Attrs[DocumentApp.Attribute.FONT_SIZE] = 14;
-  header3Attrs[DocumentApp.Attribute.FONT_SIZE] = 11;
-  titleAttrs[DocumentApp.Attribute.FONT_SIZE] = 30;
+  normalAttrs[DocumentApp.Attribute.FONT_SIZE]  = parseInt(userProperties.getProperty('normalFontSize'));
+  header1Attrs[DocumentApp.Attribute.FONT_SIZE] = parseInt(userProperties.getProperty('header1FontSize'));
+  header2Attrs[DocumentApp.Attribute.FONT_SIZE] = parseInt(userProperties.getProperty('header2FontSize'));
+  header3Attrs[DocumentApp.Attribute.FONT_SIZE] = parseInt(userProperties.getProperty('header3FontSize'));
+  titleAttrs[DocumentApp.Attribute.FONT_SIZE]   = parseInt(userProperties.getProperty('titleFontSize'));
   
-  normalAttrs[DocumentApp.Attribute.BOLD] = false;
-  titleAttrs[DocumentApp.Attribute.BOLD] = header1Attrs[DocumentApp.Attribute.BOLD] = 
-                                                   header2Attrs[DocumentApp.Attribute.BOLD] = 
-                                                   header3Attrs[DocumentApp.Attribute.BOLD] = true;
+  normalAttrs[DocumentApp.Attribute.BOLD]  = isTrue(userProperties.getProperty('normalBold'));
+  header1Attrs[DocumentApp.Attribute.BOLD] = isTrue(userProperties.getProperty('header1Bold'));
+  header2Attrs[DocumentApp.Attribute.BOLD] = isTrue(userProperties.getProperty('header2Bold'));
+  header3Attrs[DocumentApp.Attribute.BOLD] = isTrue(userProperties.getProperty('header3Bold'));
+  titleAttrs[DocumentApp.Attribute.BOLD]   = isTrue(userProperties.getProperty('titleBold')); 
   
-  body.setHeadingAttributes(DocumentApp.ParagraphHeading.NORMAL, normalAttrs);
-  body.setHeadingAttributes(DocumentApp.ParagraphHeading.TITLE, titleAttrs);
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.NORMAL,   normalAttrs);
+  body.setHeadingAttributes(DocumentApp.ParagraphHeading.TITLE,    titleAttrs);
   body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING1, header1Attrs);
   body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING2, header2Attrs);
   body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING3, header3Attrs);
@@ -515,6 +527,7 @@ function changeStyle() {
     }
   }
 }
+
 
 function getParagraphChildren(element) {
   var elements = [];
@@ -599,4 +612,160 @@ function sortTable(isDesc) {
     }
   }
 }
+
+//Sets default styleguide values.
+function setDefaultUserProperties() {
+    PropertiesService.getUserProperties().setProperties({
+      'listIndentation'      : '7.2',
+    
+      'normalLineSpacing'    : '1.3',
+      'normalSpacingBefore'  : '0',
+      'normalSpacingAfter'   : '0',
+      'normalFontSize'       : '11',
+      'normalBold'           : 'false',
+    
+      'titleLineSpacing'     : '1.2',
+      'titleSpacingBefore'   : '50',
+      'titleSpacingAfter'    : '20',
+      'titleFontSize'        : '30',
+      'titleBold'            : 'true',
+    
+      'header1LineSpacing'   : '1.3',
+      'header1SpacingBefore' : '0',
+      'header1SpacingAfter'  : '8',
+      'header1FontSize'      : '20',
+      'header1Bold'          : 'true',
+    
+      'header2LineSpacing'   : '1.3',
+      'header2SpacingBefore' : '0',
+      'header2SpacingAfter'  : '8',
+      'header2FontSize'      : '14',
+      'header2Bold'          : 'true',
+    
+      'header3LineSpacing'   : '1.3',
+      'header3SpacingBefore' : '0',
+      'header3SpacingAfter'  : '2',
+      'header3FontSize'      : '11',
+      'header3Bold'          : 'true',
+  });
+}
+
+function applyProperties(properties) {
+  var lowerLineSpacing = 1;
+  var upperLineSpacing = 100;
+  var lowerBASpacing = 0;
+  var upperBASpacing = 250;
+  var lowerFontSize = 6;
+  var upperFontSize = 400;
   
+  var error = 'Line spacing: '+lowerLineSpacing.toString()+'-'+upperLineSpacing.toString()+', spacing before/after: '+lowerBASpacing.toString()+
+              '-'+upperBASpacing.toString()+', font size: '+lowerFontSize.toString()+'-'+upperFontSize.toString()+'(must be integer)';
+  
+  var normalLineSpacing    = parseFloat(properties['normalLineSpacing']);
+  var normalSpacingBefore  = parseFloat(properties['normalSpacingBefore']);
+  var normalSpacingAfter   = parseFloat(properties['normalSpacingAfter']);
+  var normalFontSize       = parseFloat(properties['normalFontSize']);
+  
+  var titleLineSpacing     = parseFloat(properties['titleLineSpacing']);
+  var titleSpacingBefore   = parseFloat(properties['titleSpacingBefore']);
+  var titleSpacingAfter    = parseFloat(properties['titleSpacingAfter']);
+  var titleFontSize        = parseFloat(properties['titleFontSize']);
+  
+  var header1LineSpacing   = parseFloat(properties['header1LineSpacing']);
+  var header1SpacingBefore = parseFloat(properties['header1SpacingBefore']);
+  var header1SpacingAfter  = parseFloat(properties['header1SpacingAfter']);
+  var header1FontSize      = parseFloat(properties['header1FontSize']);
+  
+  var header2LineSpacing   = parseFloat(properties['header2LineSpacing']);
+  var header2SpacingBefore = parseFloat(properties['header2SpacingBefore']);
+  var header2SpacingAfter  = parseFloat(properties['header2SpacingAfter']);
+  var header2FontSize      = parseFloat(properties['header2FontSize']);
+  
+  var header3LineSpacing   = parseFloat(properties['header3LineSpacing']);
+  var header3SpacingBefore = parseFloat(properties['header3SpacingBefore']);
+  var header3SpacingAfter  = parseFloat(properties['header3SpacingAfter']);
+  var header3FontSize      = parseFloat(properties['header3FontSize']);
+  
+  var listIndentation      = parseFloat(properties['listIndentation']);
+  
+  if ((properties['normalLineSpacing']  !== normalLineSpacing.toString() )||(normalLineSpacing  < lowerLineSpacing)||(normalLineSpacing  > upperLineSpacing)||
+      (properties['titleLineSpacing']   !== titleLineSpacing.toString()  )||(titleLineSpacing   < lowerLineSpacing)||(titleLineSpacing   > upperLineSpacing)||
+      (properties['header1LineSpacing'] !== header1LineSpacing.toString())||(header1LineSpacing < lowerLineSpacing)||(header1LineSpacing > upperLineSpacing)||
+      (properties['header2LineSpacing'] !== header2LineSpacing.toString())||(header2LineSpacing < lowerLineSpacing)||(header3LineSpacing > upperLineSpacing)||
+      (properties['header3LineSpacing'] !== header3LineSpacing.toString())||(header3LineSpacing < lowerLineSpacing)||(header3LineSpacing > upperLineSpacing)||
+      
+      (properties['normalSpacingBefore']  !== normalSpacingBefore.toString() )||(normalSpacingBefore  < lowerBASpacing)||(normalSpacingBefore  > upperBASpacing)||
+      (properties['titleSpacingBefore']   !== titleSpacingBefore.toString()  )||(titleSpacingBefore   < lowerBASpacing)||(titleSpacingBefore   > upperBASpacing)||
+      (properties['header1SpacingBefore'] !== header1SpacingBefore.toString())||(header1SpacingBefore < lowerBASpacing)||(header1SpacingBefore > upperBASpacing)||
+      (properties['header2SpacingBefore'] !== header2SpacingBefore.toString())||(header2SpacingBefore < lowerBASpacing)||(header2SpacingBefore > upperBASpacing)||
+      (properties['header3SpacingBefore'] !== header3SpacingBefore.toString())||(header3SpacingBefore < lowerBASpacing)||(header3SpacingBefore > upperBASpacing)||
+        
+      (properties['normalSpacingAfter']  !== normalSpacingAfter.toString() )||(normalSpacingAfter  < lowerBASpacing)||(normalSpacingAfter  > upperBASpacing)||
+      (properties['titleSpacingAfter']   !== titleSpacingAfter.toString()  )||(titleSpacingAfter   < lowerBASpacing)||(titleSpacingAfter   > upperBASpacing)||
+      (properties['header1SpacingAfter'] !== header1SpacingAfter.toString())||(header1SpacingAfter < lowerBASpacing)||(header1SpacingAfter > upperBASpacing)||
+      (properties['header2SpacingAfter'] !== header2SpacingAfter.toString())||(header2SpacingAfter < lowerBASpacing)||(header2SpacingAfter > upperBASpacing)||
+      (properties['header3SpacingAfter'] !== header3SpacingAfter.toString())||(header3SpacingAfter < lowerBASpacing)||(header3SpacingAfter > upperBASpacing)||
+        
+      (properties['normalFontSize']  !== normalFontSize.toString() )||(normalFontSize  % 1 !== 0)||(normalFontSize  < lowerFontSize)||(normalFontSize  > upperFontSize)||
+      (properties['titleFontSize']   !== titleFontSize.toString()  )||(titleFontSize   % 1 !== 0)||(titleFontSize   < lowerFontSize)||(titleFontSize   > upperFontSize)||
+      (properties['header1FontSize'] !== header1FontSize.toString())||(header1FontSize % 1 !== 0)||(header1FontSize < lowerFontSize)||(header1FontSize > upperFontSize)||
+      (properties['header2FontSize'] !== header2FontSize.toString())||(header2FontSize % 1 !== 0)||(header2FontSize < lowerFontSize)||(header2FontSize > upperFontSize)||
+      (properties['header3FontSize'] !== header3FontSize.toString())||(header3FontSize % 1 !== 0)||(header3FontSize < lowerFontSize)||(header3FontSize > upperFontSize)||
+        
+      (properties['listIndentation'] !== listIndentation.toString())||(listIndentation < 0))
+      {
+        throw error;
+      }
+          
+    PropertiesService.getUserProperties().setProperties(properties);
+}
+
+
+function showMenu() {
+  var menu = HtmlService.createHtmlOutputFromFile('PropertiesDialog')
+      .setWidth(600)
+      .setHeight(400);
+  DocumentApp.getUi()
+      .showModalDialog(menu, 'Properties');
+}
+ 
+function getUserProperties() {
+  var userProperties = PropertiesService.getUserProperties();
+  return [ userProperties.getProperty('normalLineSpacing'),
+           userProperties.getProperty('normalSpacingBefore'),
+           userProperties.getProperty('normalSpacingAfter'),
+           userProperties.getProperty('normalFontSize'),
+           userProperties.getProperty('normalBold'),
+         
+           userProperties.getProperty('titleLineSpacing'),
+           userProperties.getProperty('titleSpacingBefore'),
+           userProperties.getProperty('titleSpacingAfter'),
+           userProperties.getProperty('titleFontSize'),
+           userProperties.getProperty('titleBold'),
+         
+           userProperties.getProperty('header1LineSpacing'),
+           userProperties.getProperty('header1SpacingBefore'),
+           userProperties.getProperty('header1SpacingAfter'),
+           userProperties.getProperty('header1FontSize'),
+           userProperties.getProperty('header1Bold'),
+         
+           userProperties.getProperty('header2LineSpacing'),
+           userProperties.getProperty('header2SpacingBefore'),
+           userProperties.getProperty('header2SpacingAfter'),
+           userProperties.getProperty('header2FontSize'),
+           userProperties.getProperty('header2Bold'),
+         
+           userProperties.getProperty('header3LineSpacing'),
+           userProperties.getProperty('header3SpacingBefore'),
+           userProperties.getProperty('header3SpacingAfter'),
+           userProperties.getProperty('header3FontSize'),
+           userProperties.getProperty('header3Bold'),
+         
+           userProperties.getProperty('listIndentation')];
+}
+
+function isTrue(s) {
+  if (s === 'true')
+    return true;
+  else return false;
+}
