@@ -15,10 +15,9 @@ function onInstall(e) {
 
 function onOpen(e) {
   DocumentApp.getUi().createAddonMenu()
-      .addItem('Start', 'showSidebar')
-      .addItem('Show menu', 'showMenu')
+      .addItem('Show sidebar', 'showSidebar')
+      .addItem('Properties', 'showMenu')
       .addToUi();
-    setDefaultUserProperties();
 }
 
 function showError() {
@@ -458,6 +457,7 @@ function changeStyle() {
   var body = DocumentApp.getActiveDocument().getBody();
   var paragraphs = getParagraphChildren(body);
   var userProperties = PropertiesService.getUserProperties();
+  var tableCellFontSize = 10;
   var normalAttrs = {};
   var titleAttrs = {};
   var header1Attrs = {};
@@ -504,7 +504,7 @@ function changeStyle() {
   body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING1, header1Attrs);
   body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING2, header2Attrs);
   body.setHeadingAttributes(DocumentApp.ParagraphHeading.HEADING3, header3Attrs);
-  
+
   for (var i = 0; i < paragraphs.length; i++) {
     var headingType = paragraphs[i].getHeading();
     
@@ -525,6 +525,8 @@ function changeStyle() {
         paragraphs[i].setAttributes(titleAttrs);
         break;
     }
+    if (paragraphs[i].getParent().getType() == DocumentApp.ElementType.TABLE_CELL)
+      paragraphs[i].editAsText().setFontSize(tableCellFontSize);
   }
 }
 
